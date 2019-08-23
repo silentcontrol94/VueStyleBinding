@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <link rel="stylesheet" href="foundation.min.css">
+    <link rel="stylesheet" href="app.css">
+</head>
+<body>
+    <div id="app">
+        <section class="row">
+            <div class="small-6 columns">
+                <h1 class="text-center">SEN</h1>
+                <div class="healthbar">
+                    <div :style=" { width : playerHealth + '%' }" class="healthbar text-center" style="background-color: green; margin: 0; color: white;">
+                      <span class="text-center"> {{ playerHealth }}% </span> 
+                    </div>
+                </div>
+            </div>
+            <div class="small-6 columns">
+                <h1 class="text-center">CANAVAR</h1>
+                <div class="healthbar">
+                    <div :style=" { width : monsterHealth + '%' }" class="healthbar text-center" style="background-color: green; margin: 0; color: white;">
+                        <span class="text-center"> {{ monsterHealth }}% </span> 
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section v-show="newGame" class="row controls">
+            <div class="small-12 columns">
+                <button @click="startGame" v-show="newGame" id="start-game">YENİ OYUN</button>
+            </div>
+        </section>
+        <section v-show="!newGame" class="row controls">
+            <div class="small-12 columns">
+                <button @click="attack" id="attack">SALDIRI</button>
+                <button @click="specialAttack" id="special-attack">ÖZEL SALDIRI</button>
+                <button @click="healPlayer" id="heal">İLK YARDIM</button>
+                <button @click="giveUP" id="give-up">PES ET!</button>
+            </div>
+        </section>
+        <section v-show="!newGame" class="row log">
+            <div class="small-12 columns">
+                <ul>
+                    <li
+                    :class="{'player-turn' : log.turn == 'p' , 'monster-turn' : log.turn == 'm'}"
+                    v-for="log in logs"> {{ log.text }} </li>
+                </ul>
+            </div>
+        </section>
+    </div>
+<script>
+new Vue({
+  el : "#app",
+  data : {
+    newGame : true,
+    playerHealth : 100,
+    monsterHealth : 100,
+    logs : []
+  },
+  methods: {
+    startGame : function(){
+      this.newGame = !this.newGame
+    },
+    attack : function(){
+      var damage = Math.ceil(Math.random() * 10);
+      this.monsterHealth -= damage
+      this.addToLog( {turn : "p" , text : "Saldırı (" + damage + ")"});
+      this.monsterAttack()
+    },
+    specialAttack : function(){
+      var sattack = Math.ceil(Math.random() * 10) + 3 ;
+      this.monsterHealth -= sattack
+      this.addToLog( {turn : "p" , text : "Özel Saldırı Vuruşu (" + sattack + ")"});
+      this.monsterAttack()
+    },
+    healPlayer : function(){  
+      var playerHeal = Math.ceil(Math.random() * 10) + 10
+      this.playerHealth += playerHeal
+      this.addToLog( {turn : "p" , text : "Oyuncu (" + playerHeal + ") Kadar Can Kazandı"});
+      this.monsterAttack()
+    },
+    giveUP : function(){
+      this.playerHealth = 0
+      this.addToLog( {turn : "p" , text : "Oyuncu Pes Etti."});
+    },
+    monsterAttack : function(){
+      var mdamage = Math.ceil(Math.random() * 10 );
+      this.playerHealth -= mdamage
+      this.addToLog( {turn : "m" , text : "Canavar Saldırısı (" + mdamage + ")"});
+    },
+    addToLog : function(log){
+      this.logs.push(log);
+    }
+  },
+  watch: {
+    playerHealth : function(value){
+      if(value <= 0 ){
+        this.playerHealth = 0;
+        if(confirm("Oyunu KAYBETTİN!! Tekrar Denemek İster misin?")){
+          this.playerHealth = 100;
+          this.monsterHealth = 100;
+          this.logs = []
+        }
+      }
+      else if(value >= 100){
+        this.playerHealth = 100;
+        this.logs = []
+      }
+    },
+    monsterHealth : function(value){
+      if(value <= 0 ){
+        this.monsterHealth = 0;
+      if(confirm("Oyunu Kazandın TEBRİKLER! Tekrar Oynamak İster Misin? ")){
+        this.playerHealth = 100;
+        this.monsterHealth = 100;
+      }
+      }
+    }
+  },
+})
+</script>
+</body>
+</html>

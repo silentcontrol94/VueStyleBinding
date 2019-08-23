@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+</head>
+<body>
+    <div id="app">
+        <my-comp></my-comp>
+        <my-comp></my-comp>
+    </div>
+
+    <script>
+    var cmp = {
+        
+    };
+
+    new Vue({
+        el : "#app",
+        components : {
+            "my-comp" : {
+                data : function(){
+            return {
+                status : "Pasif"    
+                }
+            },
+                methods: {
+                    active : function(){
+                        this.status = "Aktif"
+                }
+            },
+        template : '<p>Sunucu Durumu: {{ status }} ( <button @click="changestatus">Aktifleştir</button> ) </p> ',
+        methods : {
+            changestatus : function(){
+                this.status = "Aktif"
+            }
+        }
+            }
+        }
+    })    
+    </script>
+</body>
+</html>
